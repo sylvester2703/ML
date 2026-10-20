@@ -1,0 +1,28 @@
+#Assignment 1
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from matplotlib.colors import ListedColormap
+df = pd.read_csv(r"C:\Users\Dell\OneDrive\Desktop\ML Datasets\Wine.csv")
+X = df.drop("Customer_Segment", axis=1)
+y = df["Customer_Segment"]
+X = StandardScaler().fit_transform(X)
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X)
+result = pd.DataFrame(X_pca, columns=["PC1", "PC2"])
+result["Customer_Segment"] = y
+print(result.head())
+print("Explained Variance:", pca.explained_variance_ratio_)
+colors = ListedColormap(["black", "red"])
+plt.scatter(
+    result["PC1"],
+    result["PC2"],
+    c=result["Customer_Segment"],
+    cmap=colors
+)
+plt.xlabel("Principal Component 1")
+plt.ylabel("Principal Component 2")
+plt.title("PCA - Wine Dataset")
+plt.colorbar(label="Customer Segment")
+plt.show()
