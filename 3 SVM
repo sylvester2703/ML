@@ -1,0 +1,66 @@
+#Assignment 3
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_digits
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, classification_report
+digits = load_digits()
+X = digits.data
+y = digits.target
+print("Dataset Shape:", X.shape)
+print("Number of Images:", len(X))
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y
+)
+print("\nTraining Images:", len(X_train))
+print("Testing Images:", len(X_test))
+model = SVC(
+    kernel="rbf",
+    gamma="scale"
+)
+model.fit(
+    X_train,
+    y_train
+)
+y_pred = model.predict(X_test)
+accuracy = accuracy_score(
+    y_test,
+    y_pred
+)
+print("\nModel Accuracy:")
+print(accuracy * 100, "%")
+index = int(
+    input(
+        "\nEnter the index of the test image (0 to "
+        + str(len(X_test) - 1)
+        + "): "
+    )
+)
+if index < 0 or index >= len(X_test):
+    print("Invalid index!")
+else:
+    image = X_test[index]
+    actual_digit = y_test[index]
+    predicted_digit = model.predict(
+        [image]
+    )[0]
+    print("\n----------------------------")
+    print("Image Index:", index)
+    print("Actual Digit:", actual_digit)
+    print("Predicted Digit:", predicted_digit)
+    print("----------------------------")
+    plt.imshow(
+        image.reshape(8, 8),
+        cmap="gray"
+    )
+    plt.title(
+        "Actual: " + str(actual_digit)
+        + " | Predicted: "
+        + str(predicted_digit)
+    )
+    plt.axis("off")
+    plt.show()
