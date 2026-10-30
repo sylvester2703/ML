@@ -1,20 +1,106 @@
-#Assignment 4
+%pip install numpy pandas matplotlib scikit-learn seaborn scipy kneed nltk requests beautifulsoup4 biopython pydeseq2 openpyxl folium
+%pip install kneed
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans 
+from kneed import KneeLocator
+# Step 1: Load the Iris dataset
+df = pd.read_csv(r"C:\Users\Dell\OneDrive\Desktop\ML Datasets\Iris.csv")
+# Step 2: Select the four numerical features for clustering
+X = df[["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"]]
+# Step 3: Calculate WCSS for K values from 1 to 10
+wcss = []
+K = range(1, 11)
+for k in K:
+    kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
+    kmeans.fit(X)
+    wcss.append(kmeans.inertia_)  # Store WCSS for each K
+# Step 4: Automatically detect the elbow point
+knee = KneeLocator(list(K), wcss, curve="convex", direction="decreasing")
+optimal_k = knee.elbow
+# Step 5: Plot the elbow graph
+plt.plot(list(K), wcss, marker="o")
+
+if optimal_k is not None:
+    plt.axvline(optimal_k, color="red", linestyle="--",
+                label=f"Optimal K = {optimal_k}")
+    plt.legend()
+plt.xlabel("Number of Clusters (K)")
+plt.ylabel("WCSS")
+plt.title("Elbow Method with Automatic Elbow Detection")
+plt.xticks(list(K))
+plt.grid(True)
+plt.show()
+# Step 6: Apply K-Means using the detected optimal K
+if optimal_k is not None:
+    kmeans = KMeans(n_clusters=optimal_k, random_state=42, n_init=10)
+    df["Cluster"] = kmeans.fit_predict(X)  # Assign a cluster to each flower
+    print("Automatically detected optimal number of clusters:", optimal_k)
+    print(df.head())
+    # Step 7: Save the dataset with cluster assignments
+    df.to_csv("Iris_Clustered.csv", index=False)
+    print("Clustered dataset saved as Iris_Clustered.csv")
+
+else:
+    print("Elbow point could not be detected automatically.")
+    print("Try adjusting the K range or reviewing the elbow graph.")
+# Output Explanation:
+#KMean: Group similar data points into K clusters based on features 
+#Elbow: Estimate the optimal numebr of custers for k meaans decide how many clusters to create where graph or line bends
+#SVM: FInds best boundary(hyperplane) that sepeartes different classes of data
+#Suuport vector: Data points closest to decision boundary
+#Random Forest:Instead of relying on one decision tree it uses multile decision tree and combines their anser to make prediction
+#Ada Boost: Combine multiple weak learners to create a strong classifier by giving attention to incorrect data points
+#Gradient Tree:Builds decision tree with each new tree attempting to reduce error of exisiting model
+# 1. The dataset contains Iris flower measurements, including sepal and petal length and width.
+# 2. WCSS measures how far the data points are from their assigned cluster centers; lower values indicate more compact clusters.
+# 3. The elbow graph shows a sharp decrease in WCSS at first and a slower decrease after around 3 clusters.
+# 4. The elbow method suggests 3 clusters because adding more clusters gives smaller improvements in WCSS.
+# 5. K-Means groups the Iris samples into 3 clusters based on their four numerical features.
+# 6. The Cluster column displays the cluster assigned to each sample; cluster numbers are labels, not the original species names.
+# 7. Thus, the elbow method helps select a suitable number of clusters before applying K-Means clustering.
+
+'''
+%pip install numpy pandas matplotlib scikit-learn seaborn scipy kneed nltk requests beautifulsoup4 biopython pydeseq2 openpyxl folium
+# Import required libraries
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
+# Read the Iris dataset
 df = pd.read_csv(r"C:\Users\Dell\OneDrive\Desktop\ML Datasets\Iris.csv")
-X = df[["SepalLengthCm", "SepalWidthCm",
-        "PetalLengthCm", "PetalWidthCm"]]
+# Algorithm Step 1: Select the four numerical features for clustering
+X = df[["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"]]
+# Algorithm Step 2: Calculate WCSS for cluster counts from 1 to 10
 wcss = []
 for k in range(1, 11):
     kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
     kmeans.fit(X)
     wcss.append(kmeans.inertia_)
-plt.plot(range(1, 11), wcss, marker='o')
+# Algorithm Step 3: Plot the elbow graph to determine the suitable number of clusters
+plt.plot(range(1, 11), wcss, marker="o")
 plt.xlabel("Number of Clusters")
 plt.ylabel("WCSS")
 plt.title("Elbow Method")
 plt.show()
+# Algorithm Step 4: Choose 3 clusters based on the elbow graph
 kmeans = KMeans(n_clusters=3, random_state=42, n_init=10)
+# Algorithm Step 5: Fit K-Means and assign a cluster label to each row
 df["Cluster"] = kmeans.fit_predict(X)
+# Display the first five rows with their assigned cluster labels
 print(df.head())
+# Output Explanation:
+#KMean: Group similar data points into K clusters based on features 
+#Elbow: Estimate the optimal numebr of custers for k meaans decide how many clusters to create where graph or line bends
+#SVM: FInds best boundary(hyperplane) that sepeartes different classes of data
+#Suuport vector: Data points closest to decision boundary
+#Random Forest:Instead of relying on one decision tree it uses multile decision tree and combines their anser to make prediction
+#Ada Boost: Combine multiple weak learners to create a strong classifier by giving attention to incorrect data points
+#Gradient Tree:Builds decision tree with each new tree attempting to reduce error of exisiting model
+# 1. The dataset contains Iris flower measurements, including sepal and petal length and width.
+# 2. WCSS measures how far the data points are from their assigned cluster centers; lower values indicate more compact clusters.
+# 3. The elbow graph shows a sharp decrease in WCSS at first and a slower decrease after around 3 clusters.
+# 4. The elbow method suggests 3 clusters because adding more clusters gives smaller improvements in WCSS.
+# 5. K-Means groups the Iris samples into 3 clusters based on their four numerical features.
+# 6. The Cluster column displays the cluster assigned to each sample; cluster numbers are labels, not the original species names.
+# 7. Thus, the elbow method helps select a suitable number of clusters before applying K-Means clustering.
+'''
