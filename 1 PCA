@@ -1,28 +1,50 @@
-#Assignment 1
+%pip install numpy pandas matplotlib scikit-learn seaborn scipy kneed nltk requests beautifulsoup4 biopython pydeseq2 openpyxl folium
+# Import required libraries
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA #from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from matplotlib.colors import ListedColormap
+# Read the Wine dataset
 df = pd.read_csv(r"C:\Users\Dell\OneDrive\Desktop\ML Datasets\Wine.csv")
+# Algorithm Step 1: Separate input features and target variable
 X = df.drop("Customer_Segment", axis=1)
 y = df["Customer_Segment"]
+# Algorithm Step 2: Standardize the features so that variables with different scales do not dominate the PCA results
 X = StandardScaler().fit_transform(X)
-pca = PCA(n_components=2)
-X_pca = pca.fit_transform(X)
-result = pd.DataFrame(X_pca, columns=["PC1", "PC2"])
+# Algorithm Step 3: Apply PCA to reduce the features to 2 components
+pca = PCA(n_components=2) #lda = LinearDiscriminantAnalysis(n_components=2)
+X_pca = pca.fit_transform(X) #X_lda = lda.fit_transform(X, y(uses y to identify and maximize the separation between different classes.))
+# Algorithm Step 4: Store the reduced data in a DataFrame
+result = pd.DataFrame(X_pca, columns=["PC1", "PC2"]) #columns=["LD1", "LD2"]
 result["Customer_Segment"] = y
+# Display the first five rows of the reduced dataset
 print(result.head())
-print("Explained Variance:", pca.explained_variance_ratio_)
+# Display the proportion of variance explained by each component
+print("Explained Variance:", pca.explained_variance_ratio_ #lda.explained_variance_ratio_)
+# Algorithm Step 5: Assign colors to the customer segments
 colors = ListedColormap(["black", "red"])
-plt.scatter(
-    result["PC1"],
-    result["PC2"],
-    c=result["Customer_Segment"],
-    cmap=colors
-)
+# Algorithm Step 6: Plot the two principal components to visualize how the wine samples are distributed across the segments
+plt.scatter(result["PC1"],result["PC2"],c=result["Customer_Segment"],cmap=colors)
+# Add labels and title to the graph
 plt.xlabel("Principal Component 1")
 plt.ylabel("Principal Component 2")
 plt.title("PCA - Wine Dataset")
+# Display the color bar for customer segments
 plt.colorbar(label="Customer Segment")
+# Display the final graph
 plt.show()
+#PCA: Maximizes data variance; does not require class labels
+#LDA: Maximizes class separation; requires class labels.
+#Reduces numebr of features while retaining as much info as possible
+#SVM: FInds best boundary(hyperplane) that sepeartes different classes of data
+#Suuport vector: Data points closest to decision boundary
+#Random Forest:Instead of relying on one decision tree it uses multile decision tree and combines their anser to make prediction
+#Ada Boost: Combine multiple weak learners to create a strong classifier by giving attention to incorrect data points
+#Gradient Tree:Builds decision tree with each new tree attempting to reduce error of exisiting model
+# Output Explanation:
+# 1. The first five rows display the wine samples after reducing the original features to PC1 and PC2.
+# 2. PC1 and PC2 are the two principal components obtained by PCA.
+# 3. Explained Variance shows the proportion of total variance captured by each principal component.
+# 4. The scatter plot represents each wine sample using PC1 and PC2.
+# 5. Different colors represent customer segments, helping visualize how the samples are distributed and whether they overlap.
