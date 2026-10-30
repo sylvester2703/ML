@@ -1,31 +1,38 @@
-#Assignment 6
+%pip install numpy pandas matplotlib scikit-learn seaborn scipy kneed nltk requests beautifulsoup4 biopython pydeseq2 openpyxl folium
+# Import required libraries
 import numpy as np
 import random
+# Algorithm Step 1: Define the maze with a start point (S), empty paths (.), walls (#) and goal (G)
 maze = [
     ['S', '.', '.', '#'],
     ['#', '.', '.', '#'],
     ['#', '.', '.', '.'],
     ['#', '#', '.', 'G']
 ]
+# Get the number of rows and columns in the maze
 rows = len(maze)
 cols = len(maze[0])
 start = (0, 0)
 goal = (3, 3)
+# Algorithm Step 2: Define actions as up, down, left and right
 actions = [0, 1, 2, 3]
+# Algorithm Step 3: Initialize the Q-table with zeros for every state and action
 Q = np.zeros((rows, cols, 4))
-alpha = 0.8      
-gamma = 0.9       
-epsilon = 0.2    
+# Set the learning rate, discount factor, exploration rate and number of episodes
+alpha = 0.8
+gamma = 0.9
+epsilon = 0.2
 episodes = 1000
+# Algorithm Step 4: Define the movement rules and rewards for the maze
 def move(state, action):
     r, c = state
-    if action == 0:      
+    if action == 0:
         r -= 1
-    elif action == 1:     
+    elif action == 1:
         r += 1
-    elif action == 2:     
+    elif action == 2:
         c -= 1
-    elif action == 3:     
+    elif action == 3:
         c += 1
     if r < 0 or r >= rows or c < 0 or c >= cols:
         return state, -10
@@ -34,6 +41,7 @@ def move(state, action):
     if maze[r][c] == 'G':
         return (r, c), 100
     return (r, c), -1
+# Algorithm Step 5: Train the agent for multiple episodes using the epsilon-greedy policy
 for episode in range(episodes):
     state = start
     for step in range(100):
@@ -42,26 +50,45 @@ for episode in range(episodes):
         else:
             action = np.argmax(Q[state[0], state[1]])
         next_state, reward = move(state, action)
-        Q[state[0], state[1], action] = Q[state[0], state[1], action] + alpha * (
-            reward +
-            gamma * np.max(Q[next_state[0], next_state[1]]) -
-            Q[state[0], state[1], action]
-        )
+        Q[state[0], state[1], action] = Q[state[0], state[1], action] + alpha * (reward + gamma * np.max(Q[next_state[0], next_state[1]]) - Q[state[0], state[1], action])
         state = next_state
         if state == goal:
             break
-print("Q-Table:")
-print(Q)
+# Algorithm Step 6: Follow the learned policy to find a path from start to goal
 state = start
 path = [state]
+visited = {state}
 for step in range(20):
     action = np.argmax(Q[state[0], state[1]])
     next_state, reward = move(state, action)
-    if next_state == state:
+    if next_state == state or next_state in visited:
         break
     state = next_state
     path.append(state)
+    visited.add(state)
     if state == goal:
         break
+# Display the learned Q-table and the path found by the agent
+print("Q-Table:")
+print(Q)
 print("\nLearned Path:")
 print(path)
+# Output Explanation:
+#Q-Learning: Model-free reinforcement learning algorithm that learns the best action to take in each state to maximize total rewards
+#Q-Table: A Q-table is a table that stores the Q-values of every state-action pair.
+#State is the current situation, action is the choice made, reward is the feedback received, and policy is the strategy for selecting actions.
+#The Q-function estimates the expected total future reward for taking a particular action in a given state.
+#Q-Learning algorithm repeatedly takes actions, receives rewards, and updates Q-values
+#formula Q(s,a)<---Q(s,a)+alpha[r+gamma maxQ(s',a')-Q(s,a)]
+#SVM: FInds best boundary(hyperplane) that sepeartes different classes of data
+#Suuport vector: Data points closest to decision boundary
+#Random Forest:Instead of relying on one decision tree it uses multile decision tree and combines their anser to make prediction
+#Ada Boost: Combine multiple weak learners to create a strong classifier by giving attention to incorrect data points
+#Gradient Tree:Builds decision tree with each new tree attempting to reduce error of exisiting model
+# 1. The Q-table stores the learned value of taking each action from each maze position.
+# 2. Positive Q-values indicate actions expected to give better future rewards, while low or negative values indicate less useful actions.
+# 3. The agent explores the maze using random actions and gradually learns from the rewards it receives.
+# 4. Moving into a wall or outside the maze gives a penalty of -10, moving to an empty cell gives -1, and reaching the goal gives +100.
+# 5. The learned path displays the sequence of maze coordinates followed by the agent from the start position.
+# 6. The goal coordinate is (3, 3); if it appears at the end of the path, the agent successfully reached the goal.
+# 7. Thus, Q-learning enables the agent to learn a route through the maze by maximizing its expected cumulative reward.
