@@ -1,159 +1,117 @@
-#Assignment 2
+%pip install numpy pandas matplotlib scikit-learn seaborn scipy kneed nltk requests beautifulsoup4 biopython pydeseq2 openpyxl folium
+# Import required libraries
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LinearRegression
-from sklearn.linear_model import Ridge
-from sklearn.linear_model import Lasso
-from sklearn.metrics import (
-    r2_score,
-    mean_squared_error,
-    mean_absolute_error
-)
+from sklearn.linear_model import LinearRegression, Ridge, Lasso
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+# Read the Uber dataset
 df = pd.read_csv(r"C:\Users\Dell\OneDrive\Desktop\ML Datasets\uber.csv")
+# Display the dataset shape and first five rows
 print("Dataset Shape:")
 print(df.shape)
 print("\nFirst 5 Rows:")
 print(df.head())
-df.drop(
-    "Unnamed: 0",
-    axis=1,
-    inplace=True
-)
-df["pickup_datetime"] = pd.to_datetime(
-    df["pickup_datetime"]
-)
+# Algorithm Step 1: Remove the unnecessary index column
+df.drop("Unnamed: 0", axis=1, inplace=True)
+# Algorithm Step 2: Convert pickup_datetime into datetime format
+# and extract year, month, day and hour
+df["pickup_datetime"] = pd.to_datetime(df["pickup_datetime"], utc=True)
 df["year"] = df["pickup_datetime"].dt.year
 df["month"] = df["pickup_datetime"].dt.month
 df["day"] = df["pickup_datetime"].dt.day
 df["hour"] = df["pickup_datetime"].dt.hour
-df.drop(
-    "pickup_datetime",
-    axis=1,
-    inplace=True
-)
-df.dropna(
-    inplace=True
-)
-df = df[
-    df["passenger_count"] > 0
-]
-df = df[
-    df["fare_amount"] > 0
-]
+# Remove the original datetime column
+df.drop("pickup_datetime", axis=1, inplace=True)
+# Algorithm Step 3: Remove missing values and invalid records
+df.dropna(inplace=True)
+df = df[df["passenger_count"] > 0]
+df = df[df["fare_amount"] > 0]
 print("\nAfter Cleaning:")
 print(df.shape)
-plt.figure(figsize=(8,5))
-sns.boxplot(
-    x=df["fare_amount"]
-)
-plt.title(
-    "Fare Amount Outlier Detection"
-)
+# Algorithm Step 4: Identify fare outliers using a boxplot
+plt.figure(figsize=(8, 5))
+sns.boxplot(x=df["fare_amount"])
+plt.title("Fare Amount Outlier Detection")
 plt.show()
+# Algorithm Step 5: Calculate IQR and remove fare outliers
 Q1 = df["fare_amount"].quantile(0.25)
 Q3 = df["fare_amount"].quantile(0.75)
-IQR = Q3-Q1
-lower_limit = Q1 - 1.5*IQR
-upper_limit = Q3 + 1.5*IQR
+IQR = Q3 - Q1
+lower_limit = Q1 - 1.5 * IQR
+upper_limit = Q3 + 1.5 * IQR
 df = df[
-    (df["fare_amount"] >= lower_limit)
-    &
+    (df["fare_amount"] >= lower_limit) &
     (df["fare_amount"] <= upper_limit)
 ]
 print("\nAfter Outlier Removal:")
 print(df.shape)
-plt.figure(
-    figsize=(10,8)
-)
+# Algorithm Step 6: Check correlations between numerical variables
+plt.figure(figsize=(10, 8))
 sns.heatmap(
     df.drop("key", axis=1).corr(),
     annot=True,
     cmap="coolwarm"
 )
-plt.title(
-    "Correlation Heatmap"
-)
+plt.title("Correlation Heatmap")
 plt.show()
+# Algorithm Step 7: Separate input features and target fare amount
 X = df.drop(["fare_amount", "key"], axis=1)
 y = df["fare_amount"]
-y = df["fare_amount"]
+# Algorithm Step 8: Split the data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(
-    X,
-    y,
-    test_size=0.2,
-    random_state=42
+    X, y, test_size=0.2, random_state=42
 )
+# Algorithm Step 9: Standardize features using training data
 scaler = StandardScaler()
-X_train = scaler.fit_transform(
-    X_train
-)
-X_test = scaler.transform(
-    X_test
-)
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+# Algorithm Step 10: Train the Linear Regression model
 linear_model = LinearRegression()
-linear_model.fit(
-    X_train,
-    y_train
-)
-linear_pred = linear_model.predict(
-    X_test
-)
-ridge_model = Ridge(
-    alpha=1.0
-)
-ridge_model.fit(
-    X_train,
-    y_train
-)
-ridge_pred = ridge_model.predict(
-    X_test
-)
-lasso_model = Lasso(
-    alpha=0.001
-)
-lasso_model.fit(
-    X_train,
-    y_train
-)
-lasso_pred = lasso_model.predict(
-    X_test
-)
+linear_model.fit(X_train, y_train)
+linear_pred = linear_model.predict(X_test)
+# Algorithm Step 11: Train the Ridge Regression model
+ridge_model = Ridge(alpha=1.0)
+ridge_model.fit(X_train, y_train)
+ridge_pred = ridge_model.predict(X_test)
+# Algorithm Step 12: Train the Lasso Regression model
+lasso_model = Lasso(alpha=0.001)
+lasso_model.fit(X_train, y_train)
+lasso_pred = lasso_model.predict(X_test)
+# Algorithm Step 13: Evaluate and compare all three models
 def evaluate_model(name, y_test, prediction):
-    r2 = r2_score(
-        y_test,
-        prediction
-    )
-    rmse = np.sqrt(
-        mean_squared_error(
-            y_test,
-            prediction
-        )
-    )
-    mae = mean_absolute_error(
-        y_test,
-        prediction
-    )
-    print("\n",name)
+    r2 = r2_score(y_test, prediction)
+    rmse = np.sqrt(mean_squared_error(y_test, prediction))
+    mae = mean_absolute_error(y_test, prediction)
+    print("\n", name)
     print("----------------")
     print("R2 Score :", r2)
     print("RMSE     :", rmse)
     print("MAE      :", mae)
-evaluate_model(
-    "Linear Regression",
-    y_test,
-    linear_pred
-)
-evaluate_model(
-    "Ridge Regression",
-    y_test,
-    ridge_pred
-)
-evaluate_model(
-    "Lasso Regression",
-    y_test,
-    lasso_pred
-)
+evaluate_model("Linear Regression", y_test, linear_pred)
+evaluate_model("Ridge Regression", y_test, ridge_pred)
+evaluate_model("Lasso Regression", y_test, lasso_pred)
+#Linear: Redict continuous numerical value by fitting best fit line to data
+#Ridge: Penalize large coefficient and shrink them towards 0 bt not 0
+#Lasso: Reduce importance of some features all the way to 0 removing them from model
+#SVM: FInds best boundary(hyperplane) that sepeartes different classes of data
+#Suuport vector: Data points closest to decision boundary
+#Random Forest:Instead of relying on one decision tree it uses multile decision tree and combines their anser to make prediction
+#Ada Boost: Combine multiple weak learners to create a strong classifier by giving attention to incorrect data points
+#Gradient Tree:Builds decision tree with each new tree attempting to reduce error of exisiting model
+# Output Explanation:
+# 1. Dataset Shape displays the number of rows and columns in the original dataset. The first five rows show sample ride records.
+# 2. After Cleaning displays the dataset size after removing missing values, invalid passenger counts and non-positive fares.
+# 3. The boxplot shows the distribution of fare amounts. Points beyond the whiskers indicate potential outliers.
+# 4. The IQR method identifies unusually low or high fares. These records are removed before training the regression models.
+# 5. The correlation heatmap shows relationships between numerical variables. Values near +1 indicate positive correlation, values near -1 indicate negative correlation, and values near 0 indicate little linear correlation.
+# 6. The dataset is divided into training data to teach the models and testing data to evaluate their predictions.
+# 7. Linear Regression predicts fares using a linear relationship.Ridge and Lasso use regularization to control model coefficients.
+# 8. R2 Score measures how well the model explains fare variation.A score closer to 1 is generally better; a score near 0 means the model explains very little variation.
+# 9. RMSE measures the typical prediction error, penalizing larger errors more strongly. A lower RMSE is better.
+# 10. MAE measures the average absolute difference between actual and predicted fares. A lower MAE is better.
+# 11. The three models have very similar scores in the given output.Their R2 scores are close to 0.022, meaning they explain only about 2.2% of the fare variation on the test data.
+# 12. Therefore, these models have limited predictive performance with the selected features. Additional useful features or improved data preprocessing may be needed for better predictions.
