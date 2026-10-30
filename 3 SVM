@@ -1,66 +1,68 @@
-#Assignment 3
+%pip install numpy pandas matplotlib scikit-learn seaborn scipy kneed nltk requests beautifulsoup4 biopython pydeseq2 openpyxl folium
+# Import required libraries
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_digits
 from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC
+from sklearn.svm import SVC #from sklearn.ensemble import RandomForestClassifier #from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, classification_report
+# Algorithm Step 1: Load the handwritten digits dataset containing digits from 0 to 9
 digits = load_digits()
 X = digits.data
 y = digits.target
+# Display the dataset shape and total number of images
 print("Dataset Shape:", X.shape)
 print("Number of Images:", len(X))
-X_train, X_test, y_train, y_test = train_test_split(
-    X,
-    y,
-    test_size=0.2,
-    random_state=42,
-    stratify=y
-)
+# Algorithm Step 2: Split the dataset into 80% training data and 20% testing data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=43, stratify=y)
+# Display the number of training and testing images
 print("\nTraining Images:", len(X_train))
 print("Testing Images:", len(X_test))
-model = SVC(
-    kernel="rbf",
-    gamma="scale"
-)
-model.fit(
-    X_train,
-    y_train
-)
+# Algorithm Step 3: Create an SVM classifier using the RBF kernel
+#model = KNeighborsClassifier(n_neighbors=5)
+model = SVC(kernel="rbf", gamma="scale") #model = RandomForestClassifier(n_estimators=100, random_state=43) 
+# Algorithm Step 4: Train the SVM model using the training data
+model.fit(X_train, y_train)
+# Algorithm Step 5: Predict the digit labels for the testing data
 y_pred = model.predict(X_test)
-accuracy = accuracy_score(
-    y_test,
-    y_pred
-)
+# Algorithm Step 6: Calculate and display the model accuracy
+accuracy = accuracy_score(y_test, y_pred)
 print("\nModel Accuracy:")
 print(accuracy * 100, "%")
-index = int(
-    input(
-        "\nEnter the index of the test image (0 to "
-        + str(len(X_test) - 1)
-        + "): "
-    )
-)
+# Display the classification report with precision, recall and F1-score for each digit
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred, zero_division=0))
+# Algorithm Step 7: Accept a test image index from the user
+index = int(input("\nEnter the index of the test image (0 to " + str(len(X_test) - 1) + "): "))
+# Algorithm Step 8: Check the index and predict the selected image if it is valid
 if index < 0 or index >= len(X_test):
     print("Invalid index!")
 else:
     image = X_test[index]
     actual_digit = y_test[index]
-    predicted_digit = model.predict(
-        [image]
-    )[0]
+    predicted_digit = model.predict([image])[0]
+    # Display the actual and predicted digit
     print("\n----------------------------")
     print("Image Index:", index)
     print("Actual Digit:", actual_digit)
     print("Predicted Digit:", predicted_digit)
     print("----------------------------")
-    plt.imshow(
-        image.reshape(8, 8),
-        cmap="gray"
-    )
-    plt.title(
-        "Actual: " + str(actual_digit)
-        + " | Predicted: "
-        + str(predicted_digit)
-    )
+    # Algorithm Step 9: Reshape the image into 8x8 pixels and display the prediction
+    plt.imshow(image.reshape(8, 8), cmap="gray")
+    plt.title("Actual: " + str(actual_digit) + " | Predicted: " + str(predicted_digit))
     plt.axis("off")
     plt.show()
+# Output Explanation:
+#RBF Kernel: Converts data into a higher-dimensional space using similarity based on distance.
+#SVM: FInds best boundary(hyperplane) that sepeartes different classes of data
+#Suuport vector: Data points closest to decision boundary
+#Random Forest:Instead of relying on one decision tree it uses multile decision tree and combines their anser to make prediction
+#Ada Boost: Combine multiple weak learners to create a strong classifier by giving attention to incorrect data points
+#Gradient Tree:Builds decision tree with each new tree attempting to reduce error of exisiting model
+# 1. Dataset Shape (1797, 64) means there are 1797 images, each represented by 64 pixel features.
+# 2. The dataset is divided into 1437 training images and 360 testing images.
+# 3. SVM learns patterns from the training images and predicts the numerical class of each test image.
+# 4. The model accuracy of approximately 99.17% means it correctly classified about 99.17% of the test images.
+# 5. The classification report displays precision, recall and F1-score for each digit from 0 to 9.
+# 6. For test image index 30, the actual digit is 6 and the predicted digit is also 6, so the selected image is classified correctly.
+# 7. The displayed image shows the handwritten digit in grayscale, with its actual and predicted labels in the title.
+# 8. Thus, SVM successfully classifies handwritten digit images into their respective numerical classes from 0 to 9.
