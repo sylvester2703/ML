@@ -64,7 +64,6 @@ print("\nAccuracy:", accuracy)
 # 9. Thus, the Random Forest Classifier predicts car evaluation categories with high accuracy on the test dataset.
 
 '''
-# Assignment 05
 %pip install numpy pandas matplotlib scikit-learn seaborn scipy kneed nltk requests beautifulsoup4 biopython pydeseq2 openpyxl folium
 # Import required libraries
 import pandas as pd
