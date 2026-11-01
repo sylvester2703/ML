@@ -21,7 +21,7 @@ result["Customer_Segment"] = y
 # Display the first five rows of the reduced dataset
 print(result.head())
 # Display the proportion of variance explained by each component
-print("Explained Variance:", pca.explained_variance_ratio_ #lda.explained_variance_ratio_)
+print("Explained Variance:", pca.explained_variance_ratio_) #lda.explained_variance_ratio_
 # Algorithm Step 5: Assign colors to the customer segments
 colors = ListedColormap(["black", "red"])
 # Algorithm Step 6: Plot the two principal components to visualize how the wine samples are distributed across the segments
