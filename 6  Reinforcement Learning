@@ -1,3 +1,4 @@
+#Assignment 06
 %pip install numpy pandas matplotlib scikit-learn seaborn scipy kneed nltk requests beautifulsoup4 biopython pydeseq2 openpyxl folium
 # Import required libraries
 import numpy as np
@@ -54,6 +55,18 @@ for episode in range(episodes):
         state = next_state
         if state == goal:
             break
+# Display Q-table with maze coordinates
+print("\nQ-Table with Coordinates:")
+
+for r in range(rows):
+    for c in range(cols):
+        print(
+            f"Position ({r},{c}): "
+            f"Up={Q[r,c,0]:.2f}, "
+            f"Down={Q[r,c,1]:.2f}, "
+            f"Left={Q[r,c,2]:.2f}, "
+            f"Right={Q[r,c,3]:.2f}"
+        )
 # Algorithm Step 6: Follow the learned policy to find a path from start to goal
 state = start
 path = [state]
