@@ -62,3 +62,102 @@ print("\nAccuracy:", accuracy)
 # 7. Random Forest combines predictions from multiple decision trees to classify cars into unacc, acc, good or vgood categories.
 # 8. The accuracy of approximately 0.974 means the model correctly classified about 97.4% of the test records.
 # 9. Thus, the Random Forest Classifier predicts car evaluation categories with high accuracy on the test dataset.
+
+'''
+# Assignment 05
+%pip install numpy pandas matplotlib scikit-learn seaborn scipy kneed nltk requests beautifulsoup4 biopython pydeseq2 openpyxl folium
+# Import required libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+# Read the car evaluation dataset without a header row
+df = pd.read_csv(r"C:\Users\Dell\OneDrive\Desktop\ML Datasets\car_evaluation.csv",header=None)
+# Display the first five and last five rows
+print("First 5 rows:")
+print(df.head())
+print("\nLast 5 rows:")
+print(df.tail())
+# Display dataset shape and column names
+print("\nShape of dataset:")
+print(df.shape)
+print("\nOriginal column names:")
+print(df.columns)
+# Display dataset information, missing values and statistical summary
+print("\nDataset information:")
+df.info()
+print("\nMissing values:")
+print(df.isnull().sum())
+print("\nStatistical summary:")
+print(df.describe())
+# Step 1: Assign meaningful column names
+df.columns = [
+    "buying", "maint", "doors", "persons",
+    "lug_boot", "safety", "class"
+]
+print("\nColumn names after assigning:")
+print(df.columns)
+# Step 2: Separate input features and target variable
+# Predict safety using the other five car features
+X = df.drop(["safety", "class"], axis=1)
+y = df["safety"]
+# Step 3: Convert categorical input features into numerical values
+for column in X.columns:
+    encoder = LabelEncoder() #use:Random Forest algorithm requires numerical input
+    X[column] = encoder.fit_transform(X[column])
+# Encode target safety values
+target_encoder = LabelEncoder()
+y = target_encoder.fit_transform(y)
+# Step 4: Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y
+)
+print("\nTraining records:", len(X_train))
+print("Testing records:", len(X_test))
+# Step 5: Create Random Forest Classifier with 100 decision trees
+model = RandomForestClassifier(
+    n_estimators=100,
+    random_state=42
+)
+# Step 6: Train the model
+model.fit(X_train, y_train)
+# Step 7: Predict the safety levels
+y_pred = model.predict(X_test)
+# Step 8: Calculate and display accuracy
+accuracy = accuracy_score(y_test, y_pred)
+print("\nModel Accuracy:")
+print(accuracy * 100, "%")
+# Display classification report
+print("\nClassification Report:")
+print(classification_report(
+    y_test,
+    y_pred,
+    labels=[0, 1, 2],
+    target_names=target_encoder.classes_,
+    zero_division=0
+))
+# Step 9: Display actual and predicted safety levels
+print("\nActual vs Predicted Safety:")
+result = pd.DataFrame({
+    "Actual Safety": target_encoder.inverse_transform(y_test),
+    "Predicted Safety": target_encoder.inverse_transform(y_pred)
+})
+print(result.head(10))
+# Output Explanation:
+#Random Forest:Instead of relying on one decision tree it uses multile decision tree and combines their anser to make prediction
+#Ada Boost: Combine multiple weak learners to create a strong classifier by giving attention to incorrect data points
+#Gradient Tree:Builds decision tree with each new tree attempting to reduce error of exisiting model
+# 1. The dataset contains 1728 rows and 7 columns representing car features and evaluation class.
+# 2. The first five and last five rows display sample records from the dataset.
+# 3. Dataset information shows column data types and non-null counts, while the missing-value check identifies empty entries.
+# 4. The column names are changed to meaningful names such as buying, maint, doors, persons, lug_boot, safety and class.
+# 5. Label Encoding converts categorical values into numerical values so the Random Forest model can process them.
+# 6. The dataset is split into training data to build the model and testing data to evaluate its predictions.
+# 7. Random Forest combines predictions from multiple decision trees to classify cars into unacc, acc, good or vgood categories.
+# 8. The accuracy of approximately 0.974 means the model correctly classified about 97.4% of the test records.
+# 9. Thus, the Random Forest Classifier predicts car evaluation categories with high accuracy on the test dataset.
+'''
