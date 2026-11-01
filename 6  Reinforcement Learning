@@ -1,3 +1,4 @@
+#Assignment 06
 %pip install numpy pandas matplotlib scikit-learn seaborn scipy kneed nltk requests beautifulsoup4 biopython pydeseq2 openpyxl folium
 # Import required libraries
 import numpy as np
@@ -92,6 +93,8 @@ print(path)
 #The Q-function estimates the expected total future reward for taking a particular action in a given state.
 #Q-Learning algorithm repeatedly takes actions, receives rewards, and updates Q-values
 #formula Q(s,a)<---Q(s,a)+alpha[r+gamma maxQ(s',a')-Q(s,a)]
+# Example: s=(0,0), a=Right(3), s'=(0,1), r=-1: Q(s,a)=0+0.8[-1+(0.9×0)-0]=-0.8
+# Reward values: Goal (G) = +100, Empty path (.) = -1, Wall (#) = -10, Outside maze = -10.
 #SVM: FInds best boundary(hyperplane) that sepeartes different classes of data
 #Suuport vector: Data points closest to decision boundary
 #Random Forest:Instead of relying on one decision tree it uses multile decision tree and combines their anser to make prediction
