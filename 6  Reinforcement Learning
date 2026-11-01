@@ -1,4 +1,3 @@
-#Assignment 06
 %pip install numpy pandas matplotlib scikit-learn seaborn scipy kneed nltk requests beautifulsoup4 biopython pydeseq2 openpyxl folium
 # Import required libraries
 import numpy as np
