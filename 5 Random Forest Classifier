@@ -33,7 +33,7 @@ X = df.drop("class", axis=1)
 y = df["class"]
 # Algorithm Step 3: Convert categorical values into numerical values using Label Encoding
 for column in X.columns:
-    encoder = LabelEncoder()
+    encoder = LabelEncoder() #use:Random Forest algorithm requires numerical input
     X[column] = encoder.fit_transform(X[column])
 # Encode the target classes into numerical labels
 target_encoder = LabelEncoder()
@@ -49,6 +49,13 @@ y_pred = model.predict(X_test)
 # Algorithm Step 8: Calculate and display the model accuracy
 accuracy = accuracy_score(y_test, y_pred)
 print("\nAccuracy:", accuracy)
+# Step 9: Display actual and predicted car evaluation classes
+result = pd.DataFrame({
+    "Actual Class": target_encoder.inverse_transform(y_test),
+    "Predicted Class": target_encoder.inverse_transform(y_pred)
+})
+print("\nActual vs Predicted Car Evaluation:")
+print(result.head(10))
 # Output Explanation:
 #Random Forest:Instead of relying on one decision tree it uses multile decision tree and combines their anser to make prediction
 #Ada Boost: Combine multiple weak learners to create a strong classifier by giving attention to incorrect data points
