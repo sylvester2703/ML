@@ -52,7 +52,11 @@ else:
     plt.axis("off")
     plt.show()
 # Output Explanation:
-#RBF Kernel: Converts data into a higher-dimensional space using similarity based on distance.
+#Linear Kernel: Used when data is linearly separable and can be classified using a straight-line boundary
+#Polynomial Kernel: Used when data has polynomial relationships and requires curved decision boundaries
+#1. Sigmoid Kernel: Used for certain non-linear classification problems and behaves similarly to a neural network activation function.
+#RBF(Radial Basis Function) Kernel: Converts data into a higher-dimensional space using similarity based on distance.We use RBF because:
+    #- Handwritten digits have different shapes, sizes and writing styles.relationship between 64 pixel features and digit classes is often non-linear.
 #SVM: FInds best boundary(hyperplane) that sepeartes different classes of data
 #Suuport vector: Data points closest to decision boundary
 #Random Forest:Instead of relying on one decision tree it uses multile decision tree and combines their anser to make prediction
